@@ -1,0 +1,97 @@
+version: "3.8"
+
+services:
+  apigateway:
+    build: ./ApiGatewayMicroservice
+    ports:
+      - 2810:80
+    environment:
+      CLIENTS_SERVICE_API_ROUTE: clients-service/api
+      AUTH_SERVICE_API_ROUTE: auth-service/api
+      NODE_ENV: development
+    networks:
+      - gateway-clients-network
+      - gateway-auth-network
+    depends_on:
+      - clients-service
+
+  auth-service:
+    build: ./AuthMicroservice
+    environment:
+      JWT_SECRET_KEY: myawesomeultrasecretkey
+      JWT_ISSUER: student
+      JWT_SUBJECT: 'Token pentru proiect'
+      JWT_AUDIENCE: postman
+      PGUSER: admin
+      PGPASSWORD: admin
+      PGHOST: db
+      PGPORT: 5432
+      PGDATABASE: bank
+      NODE_ENV: development
+    networks:
+      - gateway-auth-network
+      - auth-clients-network
+      - auth-db-network
+
+  clients-service:
+    build: ./ClientsMicroservice
+    environment:
+      IO_SERVICE_API_ROUTE: io-service/api
+      AUTH_SERVICE_API_ROUTE: auth-service/api
+      NODE_ENV: development
+    networks:
+      - gateway-clients-network
+      - auth-clients-network
+      - clients-io-network
+    depends_on:
+      - io-service
+
+  io-service:
+    build: ./IOMicroservice
+    environment:
+      PGUSER: admin
+      PGPASSWORD: admin
+      PGHOST: db
+      PGPORT: 5432
+      PGDATABASE: bank
+      NODE_ENV: development
+    networks:
+      - clients-io-network
+      - io-db-network
+    depends_on:
+      - db
+
+  db:
+    image: postgres:12
+    environment:
+      POSTGRES_DB: bank
+      POSTGRES_USER: admin
+      POSTGRES_PASSWORD: admin
+    networks:
+      - io-db-network
+      - auth-db-network
+      - db-adminer-network
+    volumes:
+      - "${PWD}/Database/init-db.sql:/docker-entrypoint-initdb.d/init-db.sql"
+      - db-persistent-volume:/var/lib/postgresql/data
+
+  adminer:
+    image: adminer
+    ports:
+      - 8080:8080
+    networks:
+      - db-adminer-network
+    depends_on:
+      - db
+
+volumes:
+  db-persistent-volume:
+
+networks:
+  gateway-clients-network:
+  gateway-auth-network:
+  auth-clients-network:
+  clients-io-network:
+  auth-db-network:
+  io-db-network:
+  db-adminer-network:
