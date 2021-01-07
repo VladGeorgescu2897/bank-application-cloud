@@ -3,16 +3,14 @@ const Router = require("express").Router();
 const { sendRequest } = require("../http-client");
 
 Router.get("/", async (req, res) => {
-  console.info(`Forwarding request for get accounts ...`);
-
-  const { token } = req.body;
-
+  console.info(`Forwarding request for get all accounts ...`);
+  const token = req.headers.authorization.split(" ")[1];
 
   const getAccountsRequest = {
-    url: `http://${process.env.CLIENTS_SERVICE_API_ROUTE}/accounts`,
+    url: `http://${process.env.BUSINESS_LOGIC_SERVICE_API_ROUTE}/accounts`,
     method: "GET",
-    data:  {
-      token,
+    headers: {
+      authorization: token,
     },
   };
 
@@ -23,11 +21,16 @@ Router.get("/", async (req, res) => {
 
 Router.get("/:id", async (req, res) => {
   const { id } = req.params;
+  const token = req.headers.authorization.split(" ")[1];
 
-  console.info(`Forwarding request for get account ${id} ...`);
+  console.info(`Forwarding request for get account with id ${id} ...`);
 
   const getAccountIdRequest = {
-    url: `http://${process.env.CLIENTS_SERVICE_API_ROUTE}/accounts/${id}`,
+    url: `http://${process.env.BUSINESS_LOGIC_SERVICE_API_ROUTE}/accounts/${id}`,
+    method: "GET",
+    headers: {
+      authorization: token,
+    },
   };
 
   const account = await sendRequest(getAccountIdRequest);
@@ -37,11 +40,16 @@ Router.get("/:id", async (req, res) => {
 
 Router.get("/client/:id", async (req, res) => {
   const { id } = req.params;
+  const token = req.headers.authorization.split(" ")[1];
 
   console.info(`Forwarding request for get accounts of client with id ${id} ...`);
 
   const getAccountsByClientIdRequest = {
-    url: `http://${process.env.CLIENTS_SERVICE_API_ROUTE}/accounts/client/${id}`,
+    url: `http://${process.env.BUSINESS_LOGIC_SERVICE_API_ROUTE}/accounts/client/${id}`,
+    method: "GET",
+    headers: {
+      authorization: token,
+    },
   };
 
   const accounts = await sendRequest(getAccountsByClientIdRequest);
@@ -50,10 +58,12 @@ Router.get("/client/:id", async (req, res) => {
 });
 
 Router.post("/", async (req, res) => {
+  console.info(`Forwarding request for post a new account...`);
   const { client_id, iban, balance, currency, type } = req.body;
+  const token = req.headers.authorization.split(" ")[1];
 
   const postAccountRequest = {
-    url: `http://${process.env.CLIENTS_SERVICE_API_ROUTE}/accounts`,
+    url: `http://${process.env.BUSINESS_LOGIC_SERVICE_API_ROUTE}/accounts`,
     method: "POST",
     data: {
       client_id,
@@ -61,6 +71,9 @@ Router.post("/", async (req, res) => {
       balance,
       currency,
       type
+    },
+    headers: {
+      authorization: token,
     },
   };
 
@@ -71,14 +84,20 @@ Router.post("/", async (req, res) => {
 
 Router.put("/transfer", async (req, res) => {
   const { ibanFrom, ibanTo, balance } = req.body;
+  const token = req.headers.authorization.split(" ")[1];
+
+  console.info(`Forwarding request for transfer money from the account with iban ${ibanFrom} to account with iban ${ibanTo}...`);
 
   const putAccountRequest = {
-    url: `http://${process.env.CLIENTS_SERVICE_API_ROUTE}/accounts/transfer`,
+    url: `http://${process.env.BUSINESS_LOGIC_SERVICE_API_ROUTE}/accounts/transfer`,
     method: "PUT",
     data: {
       ibanFrom,
       ibanTo,
       balance,
+    },
+    headers: {
+      authorization: token,
     },
   };
 
@@ -89,13 +108,19 @@ Router.put("/transfer", async (req, res) => {
 Router.put("/withdraw/:iban", async (req, res) => {
   const { iban } = req.params;
   const { client_id, balance } = req.body;
+  const token = req.headers.authorization.split(" ")[1];
+
+  console.info(`Forwarding request for withdraw money from the account with iban ${iban} of the client with id ${client_id}...`);
 
   const withdrawAccountRequest = {
-    url: `http://${process.env.CLIENTS_SERVICE_API_ROUTE}/accounts/withdraw/${iban}`,
+    url: `http://${process.env.BUSINESS_LOGIC_SERVICE_API_ROUTE}/accounts/withdraw/${iban}`,
     method: "PUT",
     data: {
       client_id,
       balance,
+    },
+    headers: {
+      authorization: token,
     },
   };
 
@@ -106,13 +131,19 @@ Router.put("/withdraw/:iban", async (req, res) => {
 Router.put("/deposit/:iban", async (req, res) => {
   const { iban } = req.params;
   const { client_id, balance } = req.body;
+  const token = req.headers.authorization.split(" ")[1];
+
+  console.info(`Forwarding request for deposit money into account with iban ${iban} of the client with id ${client_id}...`);
 
   const depositAccountRequest = {
-    url: `http://${process.env.CLIENTS_SERVICE_API_ROUTE}/accounts/deposit/${iban}`,
+    url: `http://${process.env.BUSINESS_LOGIC_SERVICE_API_ROUTE}/accounts/deposit/${iban}`,
     method: "PUT",
     data: {
       client_id,
       balance,
+    },
+    headers: {
+      authorization: token,
     },
   };
 
@@ -123,12 +154,18 @@ Router.put("/deposit/:iban", async (req, res) => {
 Router.delete("/:iban", async (req, res) => {
   const { iban } = req.params;
   const { client_id } = req.body;
+  const token = req.headers.authorization.split(" ")[1];
+
+  console.info(`Forwarding request to delete the account with iban ${iban} of the client with id ${client_id}...`);
 
   const deleteAccountRequest = {
-    url: `http://${process.env.CLIENTS_SERVICE_API_ROUTE}/accounts/${iban}`,
+    url: `http://${process.env.BUSINESS_LOGIC_SERVICE_API_ROUTE}/accounts/${iban}`,
     method: "DELETE",
     data: {
       client_id,
+    },
+    headers: {
+      authorization: token,
     },
   };
 

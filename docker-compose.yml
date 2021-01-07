@@ -6,14 +6,14 @@ services:
     ports:
       - 2810:80
     environment:
-      CLIENTS_SERVICE_API_ROUTE: clients-service/api
+      BUSINESS_LOGIC_SERVICE_API_ROUTE: business-logic-service/api
       AUTH_SERVICE_API_ROUTE: auth-service/api
       NODE_ENV: development
     networks:
-      - gateway-clients-network
+      - gateway-business-logic-network
       - gateway-auth-network
     depends_on:
-      - clients-service
+      - business-logic-service
 
   auth-service:
     build: ./AuthMicroservice
@@ -30,19 +30,19 @@ services:
       NODE_ENV: development
     networks:
       - gateway-auth-network
-      - auth-clients-network
+      - auth-business-logic-network
       - auth-db-network
 
-  clients-service:
+  business-logic-service:
     build: ./ClientsMicroservice
     environment:
       IO_SERVICE_API_ROUTE: io-service/api
       AUTH_SERVICE_API_ROUTE: auth-service/api
       NODE_ENV: development
     networks:
-      - gateway-clients-network
-      - auth-clients-network
-      - clients-io-network
+      - gateway-business-logic-network
+      - auth-business-logic-network
+      - business-logic-io-network
     depends_on:
       - io-service
 
@@ -56,7 +56,7 @@ services:
       PGDATABASE: bank
       NODE_ENV: development
     networks:
-      - clients-io-network
+      - business-logic-io-network
       - io-db-network
     depends_on:
       - db
@@ -88,10 +88,10 @@ volumes:
   db-persistent-volume:
 
 networks:
-  gateway-clients-network:
+  gateway-business-logic-network:
   gateway-auth-network:
-  auth-clients-network:
-  clients-io-network:
+  auth-business-logic-network:
+  business-logic-io-network:
   auth-db-network:
   io-db-network:
   db-adminer-network:

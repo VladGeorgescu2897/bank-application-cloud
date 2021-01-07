@@ -41,14 +41,13 @@ Router.post('/register', async (req, res) => {
 });
 
 Router.get('/verify', async (req, res) => {
-    console.log("############# VERIFY AUTH")
-    const {
-        token
-    } = req.body;
+    console.log("############# VERIFY AUTH FROM BUSINESS LOGIC ###########")
+    const token = req.headers.authorization;
+    const { rolesToCheck } = req.body;
 
-    const decoded = await verifyAndDecodeData(token);
+    const hasPermission = await verifyAndDecodeData(token, rolesToCheck);
 
-    res.json(decoded);
+    res.json(hasPermission);
 });
 
 

@@ -7,7 +7,6 @@ Router.get("/login", async (req, res) => {
 
     const { username, password, email } = req.body;
 
-
     const getResponseRequest = {
         url: `http://${process.env.AUTH_SERVICE_API_ROUTE}/login`,
         method: "GET",
@@ -27,7 +26,6 @@ Router.post("/register", async (req, res) => {
     console.info(`Forwarding request for register ...`);
 
     const { username, password, email, role} = req.body;
-
 
     const getResponseRequest = {
         url: `http://${process.env.AUTH_SERVICE_API_ROUTE}/register`,

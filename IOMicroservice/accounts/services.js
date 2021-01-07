@@ -11,9 +11,11 @@ const getAccounts = async () => {
 };
 
 const getAccountById = async (id) => {
-    console.info(`Getting account ${id} ...`);
+    console.info(`Getting  VLAAAAAD account ${id} ...`);
 
     const account = await query("SELECT * FROM accounts WHERE account_id = $1", [id]);
+
+    console.log("########ACCOUNT: ", account[0]);
 
     return account[0];
 };
