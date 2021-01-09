@@ -2,7 +2,6 @@ const {
     sendRequest
 } = require('./http-client');
 
-
 const getClients = async (token) => {
     console.info(`Sending request to IO for all clients ...`);
 
@@ -23,17 +22,16 @@ const getClients = async (token) => {
         const getClients = {
             url: `http://${process.env.IO_SERVICE_API_ROUTE}/clients`,
             method: "GET",
-
         }
         const clients = await sendRequest(getClients);
 
         return clients;
     }
-    else return "NU ESTI AUTORIZAT SA FACI ACEASTA OPERATIE!";
+    else return "You do not have authorization for this operation!";
 };
 
 const getClientById = async (token, id) => {
-    console.info(`Sending request to IO for client ${id} ...`);
+    console.info(`Sending request to IO for client with id ${id} ...`);
 
     const rolesToCheck = ["admin"];
 
@@ -49,14 +47,14 @@ const getClientById = async (token, id) => {
     };
     const hasPermission = await sendRequest(sendToken);
     if (hasPermission) {
-        const options = {
-            url: `http://${process.env.IO_SERVICE_API_ROUTE}/clients/${id}`
+        const getClientByIdRequest = {
+            url: `http://${process.env.IO_SERVICE_API_ROUTE}/clients/${id}`,
         }
-        const client = await sendRequest(options);
+        const client = await sendRequest(getClientByIdRequest);
 
         return client;
     }
-    else return "NU ESTI AUTORIZAT SA FACI ACEASTA OPERATIE!";
+    else return "You do not have authorization for this operation!";
 };
 
 const getAccounts = async (token) => {
@@ -78,16 +76,47 @@ const getAccounts = async (token) => {
     const hasPermission = await sendRequest(sendToken);
 
     if (hasPermission) {
-        const options = {
-            url: `http://${process.env.IO_SERVICE_API_ROUTE}/accounts`
+        const getAccountsRequest = {
+            url: `http://${process.env.IO_SERVICE_API_ROUTE}/accounts`,
         }
 
-        const accounts = await sendRequest(options);
+        const accounts = await sendRequest(getAccountsRequest);
         return accounts;
     }
 
-    else return "NU ESTI AUTORIZAT SA FACI ACEASTA OPERATIE!"
+    else return "You do not have authorization for this operation!";
 };
+
+const getAccountByIban = async (token, iban) => {
+    console.info(`Sending request to IO for account with iban ${iban} ...`);
+
+    const rolesToCheck = ["admin", "user"];
+
+    const sendToken = {
+        url: `http://${process.env.AUTH_SERVICE_API_ROUTE}/verify`,
+        method: "GET",
+        data : {
+            rolesToCheck,
+        },
+        headers: {
+            authorization: token,
+        },
+    };
+
+    const hasPermission = await sendRequest(sendToken);
+
+    if (hasPermission) {
+        const getAccountByIbanRequest = {
+            url: `http://${process.env.IO_SERVICE_API_ROUTE}/accounts/${iban}`,
+        }
+
+        const account = await sendRequest(getAccountByIbanRequest);
+        return account;
+    }
+
+    else return "You do not have authorization for this operation!";
+};
+
 
 const getAccountsByClientId = async (token, id) => {
     console.info(`Sending request to IO for accounts of client with id ${id} ...`);
@@ -107,16 +136,14 @@ const getAccountsByClientId = async (token, id) => {
     const hasPermission = await sendRequest(sendToken);
 
     if (hasPermission) {
-
-        const options = {
-            url: `http://${process.env.IO_SERVICE_API_ROUTE}/accounts/client/${id}`
+        const getAccountByClientIdRequest = {
+            url: `http://${process.env.IO_SERVICE_API_ROUTE}/accounts/client/${id}`,
         }
-
-        const accounts = await sendRequest(options);
+        const accounts = await sendRequest(getAccountByClientIdRequest);
 
         return accounts;
     }
-    else return "NU ESTI AUTORIZAT SA FACI ACEASTA OPERATIE!"
+    else return "You do not have authorization for this operation!";
 };
 
 const addAccount = async (token, client_id, iban, balance, currency, type) => {
@@ -138,7 +165,7 @@ const addAccount = async (token, client_id, iban, balance, currency, type) => {
     const hasPermission = await sendRequest(sendToken);
 
     if (hasPermission) {
-        const options = {
+        const addAccountRequest = {
             url: `http://${process.env.IO_SERVICE_API_ROUTE}/accounts`,
             method: 'POST',
             data: {
@@ -149,10 +176,11 @@ const addAccount = async (token, client_id, iban, balance, currency, type) => {
                 type
             }
         }
-        const account_id = await sendRequest(options);
+        const account_id = await sendRequest(addAccountRequest);
+
         return account_id;
     }
-    else return "NU ESTI AUTORIZAT SA FACI ACEASTA OPERATIE!"
+    else return "You do not have authorization for this operation!";
 };
 
 const transfer = async (token, ibanFrom, ibanTo, balance) => {
@@ -208,7 +236,7 @@ const transfer = async (token, ibanFrom, ibanTo, balance) => {
 
         return response;
     }
-    else return "NU ESTI AUTORIZAT SA FACI ACEASTA OPERATIE!"
+    else return "You do not have authorization for this operation!";
 };
 
 const withdraw = async (token, client_id, iban, balance) => {
@@ -247,10 +275,11 @@ const withdraw = async (token, client_id, iban, balance) => {
 
         if (accountToWithdraw.client_id === client_id)
             accountToWithdrawIban = await sendRequest(withdrawFromAccount);
+        else return "Client id that was provided is wrong!"
 
         return accountToWithdrawIban;
     }
-    else return "NU ESTI AUTORIZAT SA FACI ACEASTA OPERATIE!"
+    else return "You do not have authorization for this operation!";
 
 };
 
@@ -289,10 +318,11 @@ const deposit = async (token, client_id, iban, balance) => {
 
         if (accountToDeposit.client_id === client_id)
             accountToDepositIban = await sendRequest(depositToAccount);
+        else return "Client id that was provided is wrong!"
 
         return accountToDepositIban;
     }
-    else return "NU ESTI AUTORIZAT SA FACI ACEASTA OPERATIE!"
+    else return "You do not have authorization for this operation!";
 };
 
 const deleteAccountByIban = async (token, client_id, iban) => {
@@ -328,16 +358,18 @@ const deleteAccountByIban = async (token, client_id, iban) => {
 
         if (accountToDelete.client_id === client_id)
             accountToDeleteIban = await sendRequest(deleteAccountRequest);
+        else return "Client id that was provided is wrong!"
 
         return accountToDeleteIban;
     }
-    else return "NU ESTI AUTORIZAT SA FACI ACEASTA OPERATIE!"
+    else return "You do not have authorization for this operation!";
 };
 
 module.exports = {
     getClients,
     getClientById,
     getAccounts,
+    getAccountByIban,
     getAccountsByClientId,
     addAccount,
     transfer,

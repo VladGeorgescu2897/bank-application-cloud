@@ -1,0 +1,8 @@
+node_modules
+.dockerignore
+node
+clientsmicroservice@1.0.0
+iomicroservice@1.0.0
+practic@1.0.0
+README.md
+.idea

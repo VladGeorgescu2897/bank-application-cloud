@@ -5,14 +5,12 @@ const {
 } = require('./errors');
 
 const {
-    test,
     addClient,
     authenticate,
     verifyAndDecodeData
 } = require('./services.js');
 
 Router.get('/login', async (req, res) => {
-    console.log("########## AUTH CONTROLLER #############")
 
     const {
         username,
@@ -21,7 +19,6 @@ Router.get('/login', async (req, res) => {
     } = req.body;
 
     const token = await authenticate(username, password, email)
-    const string = await test();
 
     res.json(token);
 });
@@ -41,7 +38,7 @@ Router.post('/register', async (req, res) => {
 });
 
 Router.get('/verify', async (req, res) => {
-    console.log("############# VERIFY AUTH FROM BUSINESS LOGIC ###########")
+
     const token = req.headers.authorization;
     const { rolesToCheck } = req.body;
 
@@ -49,8 +46,5 @@ Router.get('/verify', async (req, res) => {
 
     res.json(hasPermission);
 });
-
-
-
 
 module.exports = Router;

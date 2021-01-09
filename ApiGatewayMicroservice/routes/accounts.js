@@ -4,6 +4,7 @@ const { sendRequest } = require("../http-client");
 
 Router.get("/", async (req, res) => {
   console.info(`Forwarding request for get all accounts ...`);
+
   const token = req.headers.authorization.split(" ")[1];
 
   const getAccountsRequest = {
@@ -19,26 +20,28 @@ Router.get("/", async (req, res) => {
   res.json(accounts);
 });
 
-Router.get("/:id", async (req, res) => {
-  const { id } = req.params;
+Router.get("/:iban", async (req, res) => {
+
+  const { iban } = req.params;
   const token = req.headers.authorization.split(" ")[1];
 
-  console.info(`Forwarding request for get account with id ${id} ...`);
+  console.info(`Forwarding request for get account with iban ${iban} ...`);
 
-  const getAccountIdRequest = {
-    url: `http://${process.env.BUSINESS_LOGIC_SERVICE_API_ROUTE}/accounts/${id}`,
+  const getAccountByIbanRequest = {
+    url: `http://${process.env.BUSINESS_LOGIC_SERVICE_API_ROUTE}/accounts/${iban}`,
     method: "GET",
     headers: {
       authorization: token,
     },
   };
 
-  const account = await sendRequest(getAccountIdRequest);
+  const account = await sendRequest(getAccountByIbanRequest);
 
   res.json(account);
 });
 
 Router.get("/client/:id", async (req, res) => {
+
   const { id } = req.params;
   const token = req.headers.authorization.split(" ")[1];
 
@@ -59,6 +62,7 @@ Router.get("/client/:id", async (req, res) => {
 
 Router.post("/", async (req, res) => {
   console.info(`Forwarding request for post a new account...`);
+
   const { client_id, iban, balance, currency, type } = req.body;
   const token = req.headers.authorization.split(" ")[1];
 
@@ -83,6 +87,7 @@ Router.post("/", async (req, res) => {
 });
 
 Router.put("/transfer", async (req, res) => {
+
   const { ibanFrom, ibanTo, balance } = req.body;
   const token = req.headers.authorization.split(" ")[1];
 
@@ -106,6 +111,7 @@ Router.put("/transfer", async (req, res) => {
 });
 
 Router.put("/withdraw/:iban", async (req, res) => {
+
   const { iban } = req.params;
   const { client_id, balance } = req.body;
   const token = req.headers.authorization.split(" ")[1];
@@ -129,6 +135,7 @@ Router.put("/withdraw/:iban", async (req, res) => {
 });
 
 Router.put("/deposit/:iban", async (req, res) => {
+
   const { iban } = req.params;
   const { client_id, balance } = req.body;
   const token = req.headers.authorization.split(" ")[1];
@@ -152,6 +159,7 @@ Router.put("/deposit/:iban", async (req, res) => {
 });
 
 Router.delete("/:iban", async (req, res) => {
+
   const { iban } = req.params;
   const { client_id } = req.body;
   const token = req.headers.authorization.split(" ")[1];

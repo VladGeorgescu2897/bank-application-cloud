@@ -9,6 +9,7 @@ clear_docker () {
   docker volume rm incercareproiect_db-persistent-volume
   docker network rm incercareproiect_business-logic-io-network
   docker network rm incercareproiect_auth-business-logic-network
+  docker network rm incercareproiect_auth-db-network
   docker network rm incercareproiect_db-adminer-network
   docker network rm incercareproiect_gateway-business-logic-network
   docker network rm incercareproiect_gateway-auth-network

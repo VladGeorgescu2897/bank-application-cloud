@@ -20,7 +20,6 @@ const generateToken = async (payload) => {
         return token;
     } catch (err) {
         console.trace(err);
-        // throw new ServerError("Eroare la codificarea tokenului!", 500);
     }
 };
 
@@ -30,14 +29,7 @@ const verifyAndDecodeData = async (token, rolesToCheck) => {
         return rolesToCheck.includes(decoded.clientRole);
     } catch (err) {
         console.trace(err);
-        // throw new ServerError("Eroare la decodificarea tokenului!", 500);
     }
-};
-
-const test = async () => {
-    console.info(`##############AUTH REQUEST TEST ...#############`);
-
-    return "VLAD ESTE HACKER";
 };
 
 const addClient = async (username, password, email, role) => {
@@ -66,6 +58,5 @@ const authenticate = async (username, password, email) => {
 module.exports = {
     addClient,
     authenticate,
-    verifyAndDecodeData,
-    test
+    verifyAndDecodeData
 }

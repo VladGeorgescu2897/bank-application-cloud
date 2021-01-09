@@ -1,0 +1,35 @@
+_format_version: "2.1"
+
+services:
+
+  - name: auth-service
+    url: http://bank-app_auth-service/api/auth
+    routes:
+      - name: auth-service-route
+        paths:
+          - /api/auth
+
+  - name: db-adminer
+    url: http://bank-app_adminer:8080
+    routes:
+      - name: adminer-service-route
+        paths:
+          - /adminer
+
+  - name: clients-service
+    url: http://bank-app_clients-service/api
+    routes:
+      - name: clients-service-route
+        paths:
+          - /api/clients
+      - name: accounts-service-route
+        paths:
+           - /api/accounts
+
+consumers:
+  - username: lab-student
+    keyauth_credentials:
+      - key: mobylab
+  - username: georgiana-caloianu
+    keyauth_credentials:
+      - key: georgiana

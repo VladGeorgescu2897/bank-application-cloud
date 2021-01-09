@@ -11,7 +11,7 @@ const getAccounts = async () => {
 };
 
 const getAccountById = async (id) => {
-    console.info(`Getting  VLAAAAAD account ${id} ...`);
+    console.info(`Getting account ${id} ...`);
 
     const account = await query("SELECT * FROM accounts WHERE account_id = $1", [id]);
 
@@ -29,7 +29,7 @@ const getAccountsByClientId = async (id) => {
 };
 
 const getAccountByIban = async (iban) => {
-    console.info(`Getting account ${iban} ...`);
+    console.info(`Getting account with iban ${iban} ...`);
 
     const accounts = await query("SELECT * FROM accounts WHERE iban = $1", [iban]);
 
@@ -46,8 +46,7 @@ const addAccount = async (client_id, iban, balance, currency, type) => {
 
 const updateAccountBalanceById = async (balance, id) => {
     console.info(`Update account balance ...`);
-    // console.log("balance:", balance);
-    // console.log("id:", id);
+
     const accounts = await query("UPDATE accounts SET balance = $1 where account_id = $2", [balance, id]);
 
     return id;
@@ -57,8 +56,6 @@ const deleteAccountByIban = async (iban) => {
     console.info(`Delete account with IBAN ${iban} ...`);
 
     const accounts = await query("DELETE FROM accounts where iban = $1", [iban]);
-
-    console.log("########### SERVICE delete: ", accounts)
 
     return iban;
 };

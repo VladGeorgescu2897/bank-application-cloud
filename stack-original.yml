@@ -1,20 +1,6 @@
 version: "3.8"
 
 services:
-  apigateway:
-    build: ./ApiGatewayMicroservice
-    ports:
-      - 2810:80
-    environment:
-      BUSINESS_LOGIC_SERVICE_API_ROUTE: business-logic-service/api
-      AUTH_SERVICE_API_ROUTE: auth-service/api
-      NODE_ENV: development
-    networks:
-      - gateway-business-logic-network
-      - gateway-auth-network
-    depends_on:
-      - business-logic-service
-
   auth-service:
     build: ./AuthMicroservice
     environment:
@@ -36,15 +22,15 @@ services:
   business-logic-service:
     build: ./BusinessLogicMicroservice
     environment:
-      IO_SERVICE_API_ROUTE: io-service/api
-      AUTH_SERVICE_API_ROUTE: auth-service/api
+      IO_SERVICE_API_ROUTE: bank-app_io-service/api
+      AUTH_SERVICE_API_ROUTE: bank-app_auth-service/api
       NODE_ENV: development
     networks:
       - gateway-business-logic-network
       - auth-business-logic-network
       - business-logic-io-network
-    depends_on:
-      - io-service
+    # depends_on:
+    #   - io-service
 
   io-service:
     build: ./IOMicroservice
@@ -58,8 +44,8 @@ services:
     networks:
       - business-logic-io-network
       - io-db-network
-    depends_on:
-      - db
+    # depends_on:
+    #   - db
 
   db:
     image: postgres:12
@@ -81,8 +67,31 @@ services:
       - 8080:8080
     networks:
       - db-adminer-network
-    depends_on:
-      - db
+    # depends_on:
+    #   - db
+
+  kong_gateway:
+    image: kong:latest
+    volumes:
+      - "${PWD}/kong:/usr/local/kong/declarative"
+    environment:
+      KONG_DATABASE: 'off'
+      KONG_DECLARATIVE_CONFIG: /usr/local/kong/declarative/kong.yml
+      KONG_PROXY_ACCESS_LOG: /dev/stdout
+      KONG_ADMIN_ACCESS_LOG: /dev/stdout
+      KONG_PROXY_ERROR_LOG: /dev/stderr
+      KONG_ADMIN_ERROR_LOG: /dev/stderr
+      KONG_ADMIN_LISTEN: 0.0.0.0:8001, 0.0.0.0:8444 ssl
+    ports:
+      - 80:8000
+      - 443:8443
+      - 2810:80
+     # deploy:
+      #  placement:
+       #   constraints: [node.role == manager]
+    networks:
+      - gateway-business-logic-network
+      - gateway-auth-network
 
 volumes:
   db-persistent-volume:

@@ -8,6 +8,7 @@ const {
     getClients,
     getClientById,
     getAccounts,
+    getAccountByIban,
     getAccountsByClientId,
     addAccount,
     transfer,
@@ -17,6 +18,7 @@ const {
 } = require('./services.js');
 
 Router.get('/clients', async (req, res) => {
+
     const token = req.headers.authorization;
     const clients = await getClients(token);
 
@@ -24,6 +26,7 @@ Router.get('/clients', async (req, res) => {
 });
 
 Router.get('/clients/:id', async (req, res) => {
+
     const token = req.headers.authorization;
     const {
         id
@@ -35,6 +38,7 @@ Router.get('/clients/:id', async (req, res) => {
 });
 
 Router.get('/accounts', async (req, res) => {
+
     const token = req.headers.authorization;
 
     const accounts = await getAccounts(token);
@@ -43,6 +47,7 @@ Router.get('/accounts', async (req, res) => {
 });
 
 Router.get('/accounts/client/:id', async (req, res) => {
+
     const token = req.headers.authorization;
     const {
         id
@@ -53,19 +58,20 @@ Router.get('/accounts/client/:id', async (req, res) => {
     res.json(account);
 });
 
-Router.get('/accounts/:id', async (req, res) => {
-    console.log("##########VLAD E AICI")
+Router.get('/accounts/:iban', async (req, res) => {
+
     const token = req.headers.authorization;
     const {
-        id
+        iban
     } = req.params;
 
-    const account = await getAccountById(token, id);
+    const account = await getAccountByIban(token, iban);
 
     res.json(account);
 });
 
 Router.post('/accounts', async (req, res) => {
+
     const token = req.headers.authorization;
     const {
         client_id,
@@ -82,6 +88,7 @@ Router.post('/accounts', async (req, res) => {
 });
 
 Router.put('/accounts/transfer', async (req, res) => {
+
     const token = req.headers.authorization;
     const {
         ibanFrom,
@@ -92,10 +99,10 @@ Router.put('/accounts/transfer', async (req, res) => {
     const response = await transfer(token, ibanFrom, ibanTo, balance);
 
     res.json(response);
-
 });
 
 Router.put('/accounts/withdraw/:iban', async (req, res) => {
+
     const token = req.headers.authorization;
     const {
         iban
@@ -109,10 +116,10 @@ Router.put('/accounts/withdraw/:iban', async (req, res) => {
     const response = await withdraw(token, client_id, iban, balance);
 
     res.json(response);
-
 });
 
 Router.put('/accounts/deposit/:iban', async (req, res) => {
+
     const token = req.headers.authorization;
     const {
         iban
@@ -126,10 +133,10 @@ Router.put('/accounts/deposit/:iban', async (req, res) => {
     const response = await deposit(token, client_id, iban, balance);
 
     res.json(response);
-
 });
 
 Router.delete('/accounts/:iban', async (req, res) => {
+
     const token = req.headers.authorization;
     const {
         iban
@@ -142,7 +149,6 @@ Router.delete('/accounts/:iban', async (req, res) => {
     const response = await deleteAccountByIban(token, client_id, iban);
 
     res.json(response);
-
 });
 
 module.exports = Router;

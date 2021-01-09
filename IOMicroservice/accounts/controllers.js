@@ -2,7 +2,6 @@ const Router = require('express').Router();
 
 const {
     getAccounts,
-    getAccountById,
     getAccountsByClientId,
     getAccountByIban,
     addAccount,
@@ -11,22 +10,22 @@ const {
 } = require('./services.js');
 
 Router.get('/', async (req, res) => {
-    console.log("########## IO GET ACCOUNTS #############")
+
     const accounts = await getAccounts();
 
     res.json(accounts);
 });
 
-// Router.get('/:id', async (req, res) => {
-//
-//     const {
-//         id
-//     } = req.params;
-//
-//     const account = await getAccountById(id);
-//
-//     res.json(account);
-// });
+Router.get('/:iban', async (req, res) => {
+
+    const {
+        iban
+    } = req.params;
+
+    const account = await getAccountByIban(iban);
+
+    res.json(account);
+});
 
 Router.get('/client/:id', async (req, res) => {
 
@@ -92,6 +91,5 @@ Router.delete('/:iban', async (req, res) => {
     res.json(account_iban);
 
 });
-
 
 module.exports = Router;

@@ -12,15 +12,7 @@ CREATE TABLE IF NOT EXISTS accounts (
     iban int NOT NULL,
     balance int NOT NULL,
     currency varchar NOT NULL,
-    type varchar NOT NULL
-);
-
-CREATE TABLE IF NOT EXISTS clients_accounts (
-    client_id INT NOT NULL,
-    account_id INT NOT NULL,
-    PRIMARY KEY (client_id, account_id),
+    type varchar NOT NULL,
     FOREIGN KEY (client_id)
-        REFERENCES clients (client_id),
-    FOREIGN KEY (account_id)
-        REFERENCES accounts (account_id)
+            REFERENCES clients (client_id)
 );
