@@ -3,7 +3,7 @@ version: "3.8"
 services:
 
   auth-service:
-    image: lauracucu/auth-microservice:1
+    image: lauracucu/auth-microservice:2
     environment:
       JWT_SECRET_KEY: myawesomeultrasecretkey
       JWT_ISSUER: student
@@ -17,23 +17,21 @@ services:
       PGDATABASE: bank
       NODE_ENV: development
     networks:
-      - gateway-auth-network
-      - auth-clients-network
+      - internal
       - auth-db-network
 
-  clients-service:
-    image: lauracucu/clients-microservice:1
+  business-logic-service:
+    image: lauracucu/business-logic-microservice:2
     environment:
       IO_SERVICE_API_ROUTE: bank-app_io-service/api
       AUTH_SERVICE_API_ROUTE: bank-app_auth-service/api
       NODE_ENV: development
     networks:
-      - gateway-clients-network
-      - auth-clients-network
-      - clients-io-network
+      - internal
+      - business-logic-io-network
 
   io-service:
-    image: lauracucu/io-microservices:1
+    image: lauracucu/io-microservices:2
     environment:
       PGUSER: admin
       PGPASSWORD: admin
@@ -42,7 +40,7 @@ services:
       PGDATABASE: bank
       NODE_ENV: development
     networks:
-      - clients-io-network
+      - business-logic-io-network
       - io-db-network
 
   db:
@@ -88,17 +86,14 @@ services:
       placement:
         constraints: [node.role == manager]
     networks:
-      - gateway-clients-network
-      - gateway-auth-network
+      - internal
 
 volumes:
   db-persistent-volume:
 
 networks:
-  gateway-clients-network:
-  gateway-auth-network:
-  auth-clients-network:
-  clients-io-network:
+  internal:
+  business-logic-io-network:
   auth-db-network:
   io-db-network:
   db-adminer-network:

@@ -17,14 +17,14 @@ services:
           - /adminer
 
   - name: clients-service
-    url: http://bank-app_clients-service/api/clients
+    url: http://bank-app_business-logic-service/api/clients
     routes:
       - name: clients-service-route
         paths:
           - /api/clients
 
   - name: accounts-service
-    url: http://bank-app_clients-service/api/accounts
+    url: http://bank-app_business-logic-service/api/accounts
     routes:
       - name: accounts-service-route
         paths:
