@@ -4,19 +4,15 @@ const {
 
 const jwt = require('jsonwebtoken');
 
-const options = {
-    issuer: process.env.JWT_ISSUER,
-    subject: process.env.JWT_SUBJECT,
-    audience: process.env.JWT_AUDIENCE
-};
-
 const {
-    query
+    query,
+    jwt_options,
+    jwt_secret_key
 } = require('./data');
 
 const generateToken = async (payload) => {
     try {
-        const token = await jwt.sign(payload, process.env.JWT_SECRET_KEY, options);
+        const token = await jwt.sign(payload, jwt_secret_key, jwt_options);
         return token;
     } catch (err) {
         console.trace(err);
@@ -25,7 +21,7 @@ const generateToken = async (payload) => {
 
 const verifyAndDecodeData = async (token, rolesToCheck) => {
     try {
-        const decoded = await jwt.verify(token, process.env.JWT_SECRET_KEY, options);
+        const decoded = await jwt.verify(token, jwt_secret_key, jwt_options);
         return rolesToCheck.includes(decoded.clientRole);
     } catch (err) {
         console.trace(err);
